@@ -1,8 +1,8 @@
-FROM golang:1.20-alpine AS builder
+FROM golang:1.27-alpine AS builder
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY go.mod go.sum ./
 
 RUN go mod download
 
@@ -14,9 +14,9 @@ FROM alpine:latest
 
 WORKDIR /root/
 
-RUN apk --noo-cache add ca-certificates
+RUN apk --no-cache add ca-certificates
 
-COPY --from=builder /service/user-service .
+COPY --from=builder /app/user-service .
 
 EXPOSE 8082
 
