@@ -1,23 +1,29 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
-    database "github.com/SeaHuyty/goghi/services/user-service/internal/database"
+	"fmt"
+	"log"
+	"net/http"
+
+	database "github.com/SeaHuyty/goghi/services/user-service/internal/database"
+	"github.com/SeaHuyty/goghi/services/user-service/internal/user"
 )
 
 func main() {
-    http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-        w.WriteHeader(http.StatusOK)
-        w.Write([]byte("User Service is up!"))
-    })
+	db, err := database.ConnectToDatabase()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
-    http.HandleFunc("/database", func(w http.ResponseWriter, r *http.Request) {
-        database.ConnectToDatabase()
-    })
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("User Service is up!"))
+	})
+	user.RegisterRoutes(mux, user.NewHandler(user.NewService(db)))
 
-    fmt.Println("User Service is running on port 8082...")
-    if err := http.ListenAndServe(":8082", nil); err != nil {
-        panic(err)
-    }
+	fmt.Println("User Service is running on port 8082...")
+	if err := http.ListenAndServe(":8082", mux); err != nil {
+		log.Fatal(err)
+	}
 }
