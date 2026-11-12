@@ -21,7 +21,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type CreateInput struct {
+type UserInput struct {
 	Name     string `json:"name"`
 	Bio      string `json:"bio"`
 	Email    string `json:"email"`
