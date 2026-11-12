@@ -7,6 +7,7 @@ import (
 
 var (
 	ErrNotFound = errors.New("follow relationship not found")
+	ErrInvalidInput = errors.New("invalid input")
 )
 
 type Follower struct {
@@ -14,6 +15,8 @@ type Follower struct {
 	UserID     string    `json:"user_id"`
 	FollowerID string    `json:"follower_id"`
 	CreatedAt  time.Time `json:"created_at"`
+	Name       string    `json:"name"`
+	ImageURL   string    `json:"image_url"`
 }
 
 type FollowInput struct {
