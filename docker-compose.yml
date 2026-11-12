@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres-post-service:
+    image: postgres:16-alpine
+    container_name: postgres-post-service
+    environment:
+      - POSTGRES_USER: postgres
+      - POSTGRES_PASSWORD: postservice001
+      - POSTGRES_DB: post_service_db
+    ports: 
+      - "5432:5432"
+    volumes:
+      - ./services/post-service/internal/database/migrations:/docker-entrypoint-initdb.d
+      - pgdata_post-service:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d post_service_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  post-service:
+    build:
+      context: .
+      dockerfile: services/post-service/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - DATABASE_URL: "postgres://postgres:postservice001@postgres-post-service:5432/post_service_db?sslmode=disabled"
+    depends_on:
+      - postgres-post-service:
+        condition: service_healthy
+  
+  postgres-user-service:
+    image: postgres:16-alpine
+    container_name: postgres-user-service
+    environment:
+      - POSTGRES_USER: postgres
+      - POSTGRES_PASSWORD: userservice001
+      - POSTGRES_DB: user_service_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./services/user-service/internal/database/migrations:/docker-entrypoint-initdb.d
+      - pgdata_user-service:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d user_service_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    ports:
+      - "8082:8082"
+  
+volumes:
+  pgdata_post-service:
+  pgdata_user-service:
