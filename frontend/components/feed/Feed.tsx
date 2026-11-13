@@ -4,7 +4,7 @@ import { PostCard } from "./PostCard";
 export function Feed({ posts }: { posts: FeedPost[] }) {
   if (posts.length === 0) {
     return (
-      <div className="rounded-3xl bg-card p-12 text-center ring-1 ring-border">
+      <div className="rounded-[28px] bg-card p-12 text-center shadow-card ring-1 ring-border">
         <p className="font-semibold">Nothing here yet</p>
         <p className="mt-1 text-sm text-muted">Follow people to see their posts in your feed.</p>
       </div>

@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="mx-auto flex w-full max-w-5xl justify-center gap-8 px-4 pb-16 pt-2">
+      <main className="mx-auto flex w-full max-w-5xl justify-center gap-8 px-4 pb-16 pt-6">
         <div className="w-full max-w-xl">
           <h1 className="sr-only">Feed</h1>
           <Suspense fallback={<FeedSkeleton />}>

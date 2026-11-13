@@ -14,6 +14,8 @@ export type PostImage = {
   id: string;
   post_id: string;
   url: string;
+  width?: number;
+  height?: number;
   created_at: string;
 };
 

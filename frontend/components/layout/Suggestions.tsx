@@ -6,8 +6,8 @@ export async function Suggestions() {
 
   return (
     <aside aria-label="Who to follow" className="hidden w-72 shrink-0 lg:block">
-      <div className="sticky top-20 rounded-3xl bg-card p-5 ring-1 ring-border">
-        <h2 className="mb-4 text-sm font-semibold">Who to follow</h2>
+      <div className="sticky top-20 rounded-[28px] bg-card p-5 shadow-card ring-1 ring-border">
+        <h2 className="mb-4 text-base font-bold tracking-tight">Who to follow</h2>
         <ul className="flex flex-col gap-4">
           {people.map((p) => (
             <li key={p.id} className="flex items-center gap-3">
@@ -19,7 +19,7 @@ export async function Suggestions() {
               {/* TODO(you): POST {USER_SERVICE}/follow */}
               <button
                 type="button"
-                className="rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-link transition-colors hover:bg-brand hover:text-brand-ink"
+                className="rounded-full bg-foreground px-3.5 py-1.5 text-xs font-semibold text-background transition-opacity hover:opacity-80"
               >
                 Follow
               </button>

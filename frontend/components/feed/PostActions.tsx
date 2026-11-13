@@ -24,7 +24,7 @@ export function PostActions({ postId, initialLiked, initialCount, commentCount }
   }
 
   const pill =
-    "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors hover:bg-background";
+    "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-background";
 
   return (
     <div className="flex items-center gap-1">
@@ -33,9 +33,9 @@ export function PostActions({ postId, initialLiked, initialCount, commentCount }
         onClick={toggleLike}
         aria-pressed={liked}
         aria-label={liked ? "Unlike" : "Like"}
-        className={`${pill} ${liked ? "text-brand" : "text-muted"}`}
+        className={`${pill} ${liked ? "bg-foreground/[0.06] text-foreground" : "text-muted"}`}
       >
-        <HeartIcon filled={liked} className="size-5 transition-transform active:scale-75" />
+        <HeartIcon filled={liked} className={`size-5 transition-transform active:scale-75 ${liked ? "text-foreground" : ""}`} />
         <span>{count.toLocaleString()}</span>
       </button>
 

@@ -6,11 +6,12 @@
   --brand-soft: #e5f7fc;
   --link: #007a99;
 
-  --background: #f5f8fa;
+  --background: #f4f7f9;
   --foreground: #0f1c22;
   --card: #ffffff;
   --muted: #5c717c;
-  --border: #e3eaee;
+  --border: #e6ecf0;
+  --shadow: 0 1px 2px rgb(15 28 34 / 0.04), 0 8px 24px -12px rgb(15 28 34 / 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,6 +24,7 @@
     --card: #101a1f;
     --muted: #8aa0ab;
     --border: #1b2a31;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
   }
 }
 
@@ -36,11 +38,15 @@
   --color-card: var(--card);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --shadow-card: var(--shadow);
   --font-sans: var(--font-kantumruy), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(60rem 28rem at 50% -8rem, color-mix(in srgb, var(--brand) 16%, transparent), transparent 70%),
+    var(--background);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);
 }

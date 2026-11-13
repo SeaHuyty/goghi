@@ -4,7 +4,7 @@ import { CommentIcon, HeartIcon, LayersIcon } from "@/components/ui/Icons";
 export function PostGrid({ posts }: { posts: Post[] }) {
   if (posts.length === 0) {
     return (
-      <div className="rounded-3xl bg-card p-12 text-center ring-1 ring-border">
+      <div className="rounded-[28px] bg-card p-12 text-center shadow-card ring-1 ring-border">
         <p className="font-semibold">No posts yet</p>
         <p className="mt-1 text-sm text-muted">Photos and thoughts you share will show up here.</p>
       </div>
@@ -12,7 +12,7 @@ export function PostGrid({ posts }: { posts: Post[] }) {
   }
 
   return (
-    <ul className="grid grid-cols-3 gap-1.5 sm:gap-3">
+    <ul className="grid grid-cols-3 gap-2 sm:gap-3">
       {posts.map((post) => {
         const cover = post.images[0];
         return (
@@ -20,7 +20,7 @@ export function PostGrid({ posts }: { posts: Post[] }) {
             {/* TODO(you): create /post/[id] */}
             <a
               href={`/post/${post.id}`}
-              className="group relative block aspect-square overflow-hidden rounded-2xl bg-brand-soft"
+              className="group relative block aspect-square overflow-hidden rounded-3xl bg-brand-soft"
             >
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element -- remote user-supplied URLs
@@ -43,7 +43,7 @@ export function PostGrid({ posts }: { posts: Post[] }) {
                 </span>
               )}
 
-              <span className="absolute inset-0 flex items-center justify-center gap-4 bg-black/45 text-sm font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+              <span className="absolute inset-0 flex items-center justify-center gap-4 bg-black/40 backdrop-blur-[2px] text-sm font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
                 <span className="flex items-center gap-1"><HeartIcon filled className="size-4" />{post.like_count}</span>
                 <span className="flex items-center gap-1"><CommentIcon className="size-4" />{post.comment_count}</span>
               </span>
