@@ -9,7 +9,7 @@ services:
     ports: 
       - "5432:5432"
     volumes:
-      - ./services/post-service/internal/database/migrations:/docker-entrypoint-initdb.d
+      - ./go-services/services/post-service/internal/database/migrations:/docker-entrypoint-initdb.d
       - pgdata_post-service:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d post_service_db"]
@@ -19,8 +19,8 @@ services:
 
   post-service:
     build:
-      context: .
-      dockerfile: services/post-service/Dockerfile
+      context: ./go-services/services/post-service
+      dockerfile: Dockerfile
     ports:
       - "8081:8081"
     environment:
@@ -39,7 +39,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./services/user-service/internal/database/migrations:/docker-entrypoint-initdb.d
+      - ./go-services/services/user-service/internal/database/migrations:/docker-entrypoint-initdb.d
       - pgdata_user-service:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d user_service_db"]
@@ -49,8 +49,8 @@ services:
 
   user-service:
     build:
-      context: .
-      dockerfile: services/user-service/Dockerfile
+      context: ./go-services/services/user-service
+      dockerfile: Dockerfile
     ports:
       - "8082:8082"
     environment:

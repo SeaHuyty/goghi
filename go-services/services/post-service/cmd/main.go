@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/SeaHuyty/goghi/services/post-service/internal/comment"
-	database "github.com/SeaHuyty/goghi/services/post-service/internal/database"
+	"github.com/SeaHuyty/goghi/services/post-service/internal/database"
 	"github.com/SeaHuyty/goghi/services/post-service/internal/image"
 	"github.com/SeaHuyty/goghi/services/post-service/internal/like"
 	"github.com/SeaHuyty/goghi/services/post-service/internal/post"
