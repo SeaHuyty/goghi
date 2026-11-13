@@ -59,7 +59,7 @@ func (s *Service) Unfollow(ctx context.Context, in FollowInput) error {
 func (s *Service) GetFollowers(ctx context.Context, userID string) ([]Follower, error) {
 	var followers []Follower
 	rows, err := s.db.QueryContext(ctx,
-		`SELECT id, user_id, follower_id, created_at, u.name, u.image_url
+		`SELECT followers.id, user_id, follower_id, followers.created_at, u.name, COALESCE(u.image_url, '')
 		 FROM followers JOIN users u ON followers.follower_id = u.id
 		 WHERE user_id = $1`, userID,
 	)
@@ -80,7 +80,7 @@ func (s *Service) GetFollowers(ctx context.Context, userID string) ([]Follower, 
 func (s *Service) GetFollowing(ctx context.Context, followerID string) ([]Follower, error) {
 	var followers []Follower
 	rows, err := s.db.QueryContext(ctx,
-		`SELECT id, user_id, follower_id, created_at, u.name, u.image_url
+		`SELECT followers.id, user_id, follower_id, followers.created_at, u.name, COALESCE(u.image_url, '')
 		 FROM followers JOIN users u ON followers.user_id = u.id
 		 WHERE follower_id = $1`, followerID,
 	)

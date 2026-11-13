@@ -1,5 +1,6 @@
 import { getSuggestions } from "@/lib/api/feed";
 import { Avatar } from "@/components/ui/Avatar";
+import { FollowButton } from "./FollowButton";
 
 export async function Suggestions() {
   const people = await getSuggestions();
@@ -12,17 +13,8 @@ export async function Suggestions() {
           {people.map((p) => (
             <li key={p.id} className="flex items-center gap-3">
               <Avatar author={p} size="sm" />
-              <div className="min-w-0 flex-1 leading-tight">
-                <p className="truncate text-sm font-medium">{p.name}</p>
-                {p.bio && <p className="truncate text-xs text-muted">{p.bio}</p>}
-              </div>
-              {/* TODO(you): POST {USER_SERVICE}/follow */}
-              <button
-                type="button"
-                className="rounded-full bg-foreground px-3.5 py-1.5 text-xs font-semibold text-background transition-opacity hover:opacity-80"
-              >
-                Follow
-              </button>
+              <p className="min-w-0 flex-1 truncate text-sm font-medium">{p.name}</p>
+              <FollowButton userId={p.id} />
             </li>
           ))}
         </ul>

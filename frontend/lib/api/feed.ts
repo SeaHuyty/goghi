@@ -1,52 +1,54 @@
-import { currentUserId, follows, likes, posts, users } from "../mock/data";
-import type { Author, FeedPost, Profile, User } from "../types";
+import "server-only";
+import type { Author, FeedPost, Profile } from "../types";
+import { listFollowers, listFollowing, followerAsAuthor } from "./follows";
+import { listLikes, listPosts, listPostsByUser } from "./posts";
+import { getCurrentUserId } from "./session";
+import { getUser, toAuthor } from "./users";
 
-/*
- * TODO(you): swap these mocks for real calls. Suggested mapping:
- *   getFeed          GET {POST_SERVICE}/posts?page=      + GET {USER_SERVICE}/users/{user_id} per author
- *                    + GET {POST_SERVICE}/post/{id}/likes to compute liked_by_me
- *   getCurrentUser   GET {USER_SERVICE}/users/{id}       (id from your session)
- *   getProfile       GET {USER_SERVICE}/users/{id} + GET {POST_SERVICE}/posts/{id}
- *                    + GET {USER_SERVICE}/followers/{id} and /following/{id} (use the lengths)
- *   getSuggestions   your own endpoint (users the current user doesn't follow)
- */
+const UNKNOWN: Omit<Author, "id"> = { name: "Unknown user", image_url: null };
 
+/** Home feed: posts from post-service joined with their authors from user-service. */
 export async function getFeed(page = 0): Promise<FeedPost[]> {
-  void page;
-  const byId = new Map<string, Author>(
-    users.map((u) => [u.id, { id: u.id, name: u.name, image_url: u.image_url }]),
+  const [me, posts] = await Promise.all([getCurrentUserId(), listPosts(page)]);
+
+  // post-service only knows user_id, so resolve each distinct author once.
+  const authorIds = [...new Set(posts.map((p) => p.user_id))];
+  const authors = new Map<string, Author>(
+    await Promise.all(
+      authorIds.map(async (id) => {
+        const user = await getUser(id).catch(() => null);
+        return [id, user ? toAuthor(user) : { id, ...UNKNOWN }] as const;
+      }),
+    ),
   );
 
-  return [...posts]
-    .sort((a, b) => b.created_at.localeCompare(a.created_at)) // newest first, like the SQL
-    .map((p) => ({
-      ...p,
-      author: byId.get(p.user_id)!,
-      liked_by_me: likes.some((l) => l.post_id === p.id && l.user_id === currentUserId),
-    }));
-}
+  // One request per post to know if I liked it. TODO: a `liked_by_me` field on GET /posts would remove this.
+  const liked = await Promise.all(
+    posts.map((p) =>
+      listLikes(p.id)
+        .then((likes) => likes.some((l) => l.user_id === me))
+        .catch(() => false),
+    ),
+  );
 
-export async function getCurrentUserId(): Promise<string> {
-  return currentUserId;
-}
-
-export async function getCurrentUser(): Promise<User> {
-  return users.find((u) => u.id === currentUserId)!;
-}
-
-export async function getSuggestions(): Promise<User[]> {
-  return users.filter((u) => u.id !== currentUserId).slice(2, 5);
+  return posts.map((p, i) => ({ ...p, author: authors.get(p.user_id)!, liked_by_me: liked[i] }));
 }
 
 export async function getProfile(userId: string): Promise<Profile | null> {
-  const user = users.find((u) => u.id === userId);
+  const user = await getUser(userId);
   if (!user) return null;
-  return {
-    user,
-    posts: posts
-      .filter((p) => p.user_id === userId)
-      .sort((a, b) => b.created_at.localeCompare(a.created_at)),
-    follower_count: follows.filter((f) => f.user_id === userId).length,
-    following_count: follows.filter((f) => f.follower_id === userId).length,
-  };
+
+  const [posts, followers, following] = await Promise.all([
+    listPostsByUser(userId),
+    listFollowers(userId),
+    listFollowing(userId),
+  ]);
+  return { user, posts, follower_count: followers.length, following_count: following.length };
+}
+
+export async function getSuggestions(): Promise<Author[]> {
+  const me = await getCurrentUserId();
+  const [followers, following] = await Promise.all([listFollowers(me), listFollowing(me)]);
+  const followed = new Set(following.map((f) => f.user_id));
+  return followers.filter((f) => !followed.has(f.follower_id)).map(followerAsAuthor).slice(0, 5);
 }

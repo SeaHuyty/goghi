@@ -15,6 +15,7 @@ type User struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Bio       string    `json:"bio"`
+	ImageURL  string    `json:"image_url"`
 	Email     string    `json:"email"`
 	Password  string    `json:"-"` // never serialized
 	CreatedAt time.Time `json:"created_at"`
@@ -24,6 +25,7 @@ type User struct {
 type UserInput struct {
 	Name     string `json:"name"`
 	Bio      string `json:"bio"`
+	ImageURL string `json:"image_url"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }

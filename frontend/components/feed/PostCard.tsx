@@ -1,5 +1,5 @@
 import type { FeedPost } from "@/lib/types";
-import { timeAgo } from "@/lib/api/time";
+import { timeAgo } from "@/lib/time";
 import { Avatar } from "@/components/ui/Avatar";
 import { PostImages } from "./PostImages";
 import { PostActions } from "./PostActions";

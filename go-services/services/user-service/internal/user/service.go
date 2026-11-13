@@ -31,11 +31,11 @@ func (s *Service) Create(ctx context.Context, in UserInput) (*User, error) {
 
 	var u User
 	err = s.db.QueryRowContext(ctx,
-		`INSERT INTO users (name, bio, email, password)
-		 VALUES ($1, $2, $3, $4)
-		 RETURNING id, name, COALESCE(bio, ''), email, created_at, updated_at`,
-		in.Name, in.Bio, in.Email, string(hash),
-	).Scan(&u.ID, &u.Name, &u.Bio, &u.Email, &u.CreatedAt, &u.UpdatedAt)
+		`INSERT INTO users (name, bio, image_url, email, password)
+		 VALUES ($1, $2, NULLIF($3, ''), $4, $5)
+		 RETURNING id, name, COALESCE(bio, ''), COALESCE(image_url, ''), email, created_at, updated_at`,
+		in.Name, in.Bio, in.ImageURL, in.Email, string(hash),
+	).Scan(&u.ID, &u.Name, &u.Bio, &u.ImageURL, &u.Email, &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
 		if strings.Contains(err.Error(), "SQLSTATE 23505") {
 			return nil, ErrEmailTaken
@@ -48,9 +48,9 @@ func (s *Service) Create(ctx context.Context, in UserInput) (*User, error) {
 func (s *Service) Get(ctx context.Context, id string) (*User, error) {
 	var u User
 	err := s.db.QueryRowContext(ctx,
-		`SELECT  id, name, COALESCE(bio, ''), email, created_at, updated_at
+		`SELECT  id, name, COALESCE(bio, ''), COALESCE(image_url, ''), email, created_at, updated_at
 		 FROM users WHERE id = $1`, id,
-		).Scan(&u.ID, &u.Name, &u.Bio, &u.Email, &u.CreatedAt, &u.UpdatedAt)
+		).Scan(&u.ID, &u.Name, &u.Bio, &u.ImageURL, &u.Email, &u.CreatedAt, &u.UpdatedAt)
 	
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -64,11 +64,11 @@ func (s *Service) Get(ctx context.Context, id string) (*User, error) {
 func (s *Service) Update(ctx context.Context, id string, in UserInput) (*User, error) {
 	var u User
 	err := s.db.QueryRowContext(ctx,
-		`UPDATE users SET name = $1, bio = $2, email = $3, password = $4, updated_at = CURRENT_TIMESTAMP
-		 WHERE id = $5
-		 RETURNING id, name, COALESCE(bio, ''), email, created_at, updated_at`,
-		in.Name, in.Bio, in.Email, in.Password, id,
-	).Scan(&u.ID, &u.Name, &u.Bio, &u.Email, &u.CreatedAt, &u.UpdatedAt)
+		`UPDATE users SET name = $1, bio = $2, image_url = NULLIF($3, ''), email = $4, password = $5, updated_at = CURRENT_TIMESTAMP
+		 WHERE id = $6
+		 RETURNING id, name, COALESCE(bio, ''), COALESCE(image_url, ''), email, created_at, updated_at`,
+		in.Name, in.Bio, in.ImageURL, in.Email, in.Password, id,
+	).Scan(&u.ID, &u.Name, &u.Bio, &u.ImageURL, &u.Email, &u.CreatedAt, &u.UpdatedAt)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

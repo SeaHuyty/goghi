@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { addComment } from "@/lib/api/actions";
 
 export function CommentForm({ postId }: { postId: string }) {
   const [text, setText] = useState("");
+  const [pending, startTransition] = useTransition();
+  const [failed, setFailed] = useState(false);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() || pending) return;
 
-    // TODO(you): POST /post/{postId}/comments   body: { user_id, content: text }
-    void postId;
-    setText("");
+    startTransition(async () => {
+      try {
+        await addComment(postId, text);
+        setText("");
+        setFailed(false);
+      } catch {
+        setFailed(true);
+      }
+    });
   }
 
   return (
@@ -19,14 +28,14 @@ export function CommentForm({ postId }: { postId: string }) {
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Write a comment…"
+        placeholder={failed ? "Couldn’t post. Try again…" : "Write a comment…"}
         aria-label="Write a comment"
         maxLength={2000}
         className="h-10 min-w-0 flex-1 bg-transparent text-sm placeholder:text-muted focus:outline-none focus-visible:outline-none"
       />
       <button
         type="submit"
-        disabled={!text.trim()}
+        disabled={!text.trim() || pending}
         className="rounded-full bg-foreground px-4 py-1.5 text-sm font-semibold text-background transition-opacity hover:opacity-80 disabled:opacity-25"
       >
         Post

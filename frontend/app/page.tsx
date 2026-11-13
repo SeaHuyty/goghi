@@ -5,7 +5,8 @@ import { Feed } from "@/components/feed/Feed";
 import { FeedSkeleton } from "@/components/feed/FeedSkeleton";
 import { Header } from "@/components/layout/Header";
 import { Suggestions } from "@/components/layout/Suggestions";
-import { getCurrentUser, getFeed } from "@/lib/api/feed";
+import { getFeed } from "@/lib/api/feed";
+import { getCurrentUser } from "@/lib/api/session";
 
 async function FeedLoader() {
   // The feed is user-specific and time-relative, so render per request, not at build time.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { setLiked } from "@/lib/api/actions";
 import { CommentIcon, HeartIcon } from "@/components/ui/Icons";
 
 type Props = {
@@ -11,16 +12,20 @@ type Props = {
 };
 
 export function PostActions({ postId, initialLiked, initialCount, commentCount }: Props) {
-  const [liked, setLiked] = useState(initialLiked);
+  const [liked, setLikedState] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
 
-  function toggleLike() {
-    // Optimistic update.
-    setLiked(!liked);
-    setCount((c) => c + (liked ? -1 : 1));
-
-    // TODO(you): call the backend and roll back on failure
-    //   liked ? DELETE /post/{postId}/likes : POST /post/{postId}/likes   body: { user_id }
+  async function toggleLike() {
+    const next = !liked;
+    // Optimistic update, rolled back if the server call fails.
+    setLikedState(next);
+    setCount((c) => c + (next ? 1 : -1));
+    try {
+      await setLiked(postId, next);
+    } catch {
+      setLikedState(!next);
+      setCount((c) => c + (next ? -1 : 1));
+    }
   }
 
   const pill =

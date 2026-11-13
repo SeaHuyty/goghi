@@ -4,11 +4,11 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostGrid } from "@/components/profile/PostGrid";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { getCurrentUserId, getProfile } from "@/lib/api/feed";
+import { getProfile } from "@/lib/api/feed";
+import { getCurrentUserId } from "@/lib/api/session";
 
 async function ProfileLoader() {
   await connection();
-  // TODO(you): use the signed-in user's id from your session.
   const profile = await getProfile(await getCurrentUserId());
   if (!profile) notFound();
 
