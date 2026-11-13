@@ -27,7 +27,6 @@ export function ProfileHeader({ profile }: { profile: Profile }) {
           <div className="rounded-full bg-card p-1.5">
             <Avatar author={user} size="xl" />
           </div>
-          {/* TODO(you): PUT {USER_SERVICE}/users/{id} */}
           <button
             type="button"
             className="rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-80"
